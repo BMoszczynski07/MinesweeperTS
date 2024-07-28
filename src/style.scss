@@ -4,6 +4,11 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  background: #6be9ff;
+}
+
+*::selection {
+  background: #0f0;
 }
 
 .site {
@@ -12,13 +17,15 @@ body {
   }
 
   &__logo {
+    display: flex;
+    align-items: center;
     font-family: $t;
     font-weight: 600;
     font-size: 27px;
     letter-spacing: 1px;
 
-    &--yellow {
-      color: #d2be10;
+    &--green {
+      color: #089520;
     }
   }
 
@@ -72,5 +79,14 @@ body {
       height: 7px;
       background: #0b5f05;
     }
+  }
+
+  &__volume-icon {
+    font-size: 23px;
+    margin-left: 10px;
+  }
+
+  &__background-ground {
+    width: 100vw;
   }
 }

@@ -1,6 +1,8 @@
 import Random from "./utilities/Random";
 
 class StartPage {
+  isMuted = false;
+
   handleCreateCloud = () => {
     const startPage: HTMLDivElement | null =
       document.querySelector(".site__start-page");
@@ -41,7 +43,29 @@ class StartPage {
     setInterval(() => this.handleCreateCloud(), 5000);
   };
 
-  constructor() {}
+  constructor() {
+    const btns = document.querySelectorAll("button");
+
+    for (const btn of btns) {
+      btn.addEventListener("mouseover", () => {
+        if (!this.isMuted) {
+          const audio = new Audio();
+          audio.src = "./src/assets/hover.wav";
+
+          audio.play();
+        }
+      });
+
+      btn.addEventListener("click", () => {
+        if (!this.isMuted) {
+          const audio = new Audio();
+          audio.src = "./src/assets/click.wav";
+
+          audio.play();
+        }
+      });
+    }
+  }
 }
 
 export default StartPage;

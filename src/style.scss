@@ -1,10 +1,35 @@
 @import "./global.scss";
 
+@keyframes difficulty_animate_in {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes difficulty_animate_out {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+}
+
 body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   background: #6be9ff;
+  overflow: hidden;
 }
 
 *::selection {
@@ -29,18 +54,113 @@ body {
     }
   }
 
-  &__start {
-    display: flex;
+  &__start-game-btn--out {
+    animation: difficulty_animate_out 0.4s forwards 0.2s !important;
+  }
+
+  &__start,
+  &__difficulty,
+  &__board-overlay {
     align-items: center;
     justify-content: center;
     flex-direction: column;
     margin-top: 150px;
   }
 
+  &__start {
+    display: flex;
+  }
+
+  &__difficulty {
+    display: none;
+  }
+
+  &__board-overlay {
+    display: none;
+    margin: 0;
+  }
+
+  &__btn {
+    &--green,
+    &--yellow,
+    &--red {
+      margin: 0 5px;
+    }
+
+    &--green {
+      background: #8fff7b !important;
+      color: #089716 !important;
+      opacity: 0;
+      transform: translateX(30px);
+      animation: difficulty_animate_in 0.5s forwards 0.1s;
+
+      &--out {
+        opacity: 1;
+        transform: translateX(0);
+        animation: difficulty_animate_out 0.4s forwards 0.1s;
+      }
+
+      &::after {
+        content: "";
+        background: #089716 !important;
+      }
+    }
+
+    &--yellow {
+      background: #fdff83 !important;
+      color: #aca40b !important;
+      opacity: 0;
+      transform: translateX(30px);
+      animation: difficulty_animate_in 0.5s forwards 0.2s;
+
+      &--out {
+        opacity: 1;
+        transform: translateX(0);
+        animation: difficulty_animate_out 0.4s forwards 0.2s;
+      }
+
+      &::after {
+        content: "";
+        background: #aca40b !important;
+      }
+    }
+
+    &--red {
+      background: #ff7171 !important;
+      color: #a50f0f !important;
+      opacity: 0;
+      transform: translateX(30px);
+      animation: difficulty_animate_in 0.5s forwards 0.3s;
+
+      &--out {
+        opacity: 1;
+        transform: translateX(0);
+        animation: difficulty_animate_out 0.4s forwards 0.3s;
+      }
+
+      &::after {
+        content: "";
+        background: #a50f0f !important;
+      }
+    }
+  }
+
   &__play {
     &-header {
       font-family: $t;
       font-size: 42px;
+
+      &--out {
+        animation: difficulty_animate_out 0.4s forwards;
+      }
+    }
+
+    &-difficulty-header {
+      animation: difficulty_animate_in 0.5s forwards;
+
+      &--out {
+        animation: difficulty_animate_out 0.4s forwards;
+      }
     }
 
     &-subtitle {
@@ -48,6 +168,10 @@ body {
       margin-top: 0;
       font-size: 14px;
       color: #797979;
+
+      &--out {
+        animation: difficulty_animate_out 0.4s forwards 0.1s;
+      }
     }
   }
 
@@ -103,5 +227,16 @@ body {
     position: absolute;
     right: -400px;
     z-index: -1;
+  }
+
+  &__board-container {
+    opacity: 0;
+    transform: translate(30px);
+    animation: difficulty_animate_in 0.5s forwards;
+    width: 350px;
+    height: 500px;
+    background: #40404096;
+    border-radius: 12px;
+    z-index: 1;
   }
 }

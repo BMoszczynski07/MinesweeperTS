@@ -1,9 +1,42 @@
 import StartPage from "./StartPage";
+import Tile from "./Tile";
 
 class Board extends StartPage {
-  board: HTMLButtonElement[] = [];
+  board: Tile[] = [];
 
-  handleGenerateBoard = () => {};
+  handleGenerateBoard = (difficulty: "easy" | "medium" | "hard") => {
+    const boardContainer = document.querySelector(".site__board");
+
+    switch (difficulty) {
+      case "easy":
+        for (let i = 0; i < 15 * 15; i++) {
+          const newTile = document.createElement("button");
+
+          newTile.classList.add("site__board-tile");
+
+          if (i % 2 == 0) {
+            newTile.classList.add("site__board-tile--light-green");
+          } else {
+            newTile.classList.add("site__board-tile--dark-green");
+          }
+
+          this.board.push({
+            type: "standard",
+            element: newTile,
+          });
+
+          boardContainer?.appendChild(newTile);
+        }
+        break;
+      case "medium":
+        break;
+      case "hard":
+        break;
+      default:
+        console.error("nieprawidłowy poziom trudności");
+        break;
+    }
+  };
 
   handlePickDifficulty = () => {
     const difficulty: HTMLDivElement | null =
@@ -58,14 +91,17 @@ class Board extends StartPage {
 
         difficultyEasy?.addEventListener("click", () => {
           this.handlePickDifficulty();
+          this.handleGenerateBoard("easy");
         });
 
         difficultyNormal?.addEventListener("click", () => {
           this.handlePickDifficulty();
+          this.handleGenerateBoard("medium");
         });
 
         difficultyHard?.addEventListener("click", () => {
           this.handlePickDifficulty();
+          this.handleGenerateBoard("hard");
         });
       }, 600);
     });

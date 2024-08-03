@@ -19,6 +19,8 @@ class Board extends StartPage {
     for (let i = -1; i <= 1; i++) {
       for (let j = -1; j <= 1; j++) {
         if (
+          this.board[tileY + i] !== undefined &&
+          this.board[tileY + i][tileX + j] !== undefined &&
           this.board[tileY + i][tileX + j].classList.contains(
             "site__board-tile--bomb"
           )
@@ -115,12 +117,22 @@ class Board extends StartPage {
         return;
       }
 
-      for (let i = -1; i <= 1; i++) {
-        for (let j = -1; j <= 1; j++) {
-          this.handleRevealTiles(
-            this.currentPos[1] + j,
-            this.currentPos[0] + i
-          );
+      const countBombs = this.handleCountBombs(col, row);
+
+      console.log(row, col);
+
+      console.log(countBombs);
+
+      if (countBombs > 0) {
+        this.handleRevealTiles(this.currentPos[1], this.currentPos[0]);
+      } else {
+        for (let i = -1; i <= 1; i++) {
+          for (let j = -1; j <= 1; j++) {
+            this.handleRevealTiles(
+              this.currentPos[1] + j,
+              this.currentPos[0] + i
+            );
+          }
         }
       }
     }
@@ -160,10 +172,10 @@ class Board extends StartPage {
         bombsQty = 10;
         break;
       case "medium":
-        bombsQty = 40;
+        bombsQty = 30;
         break;
       case "hard":
-        bombsQty = 75;
+        bombsQty = 50;
         break;
     }
 
@@ -262,7 +274,7 @@ class Board extends StartPage {
       case "medium":
         if (boardElement) boardElement.style.width = "325px";
         if (boardElement) boardElement.style.height = "325px";
-        if (flags) flags.textContent = "40";
+        if (flags) flags.textContent = "30";
         this.boardSize = 13;
         this.difficulty = "medium";
 
@@ -273,7 +285,7 @@ class Board extends StartPage {
       case "hard":
         if (boardElement) boardElement.style.width = "375px";
         if (boardElement) boardElement.style.height = "375px";
-        if (flags) flags.textContent = "75";
+        if (flags) flags.textContent = "50";
         this.boardSize = 15;
         this.difficulty = "hard";
 

@@ -304,6 +304,11 @@ body {
     border: none;
     cursor: pointer;
 
+    &--marked {
+      background: #dbdbdb !important;
+      font-family: $st;
+    }
+
     &--bomb {
       background: #f00 !important;
     }

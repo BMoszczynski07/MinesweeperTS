@@ -11,7 +11,146 @@ class Board extends StartPage {
 
   currentPos: [number, number] | [null, null] = [null, null];
 
-  tileClickHandlers: { [key: number]: (event: Event) => void } = {};
+  tileClickHandler: { [key: number]: (event: Event) => void } = {};
+
+  handleCountBombs = (tileX: number, tileY: number): number => {
+    let bombsQty = 0;
+
+    for (let i = -1; i <= 1; i++) {
+      for (let j = -1; j <= 1; j++) {
+        if (
+          this.board[tileY + i][tileX + j].classList.contains(
+            "site__board-tile--bomb"
+          )
+        ) {
+          bombsQty++;
+        }
+      }
+    }
+
+    return bombsQty;
+  };
+
+  handleRevealTiles(tileX: number, tileY: number) {
+    if (
+      this.board[tileY] !== undefined &&
+      this.board[tileY][tileX] !== undefined
+    ) {
+      if (
+        this.board[tileY][tileX].classList.contains(
+          "site__board-tile--marked"
+        ) ||
+        this.board[tileY][tileX].classList.contains("site__board-tile--bomb")
+      )
+        return;
+
+      const countBombs = this.handleCountBombs(tileX, tileY);
+
+      switch (countBombs) {
+        case 0:
+          this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+              this.handleRevealTiles(tileX + j, tileY + i);
+            }
+          }
+          return;
+        case 1:
+          this.board[tileY][tileX].textContent = "1";
+          this.board[tileY][tileX].style.color = "#4453db";
+          this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          break;
+        case 2:
+          this.board[tileY][tileX].textContent = "2";
+          this.board[tileY][tileX].style.color = "#0de00d";
+          this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          break;
+        case 3:
+          this.board[tileY][tileX].textContent = "3";
+          this.board[tileY][tileX].style.color = "#ba0b0b";
+          this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          break;
+        case 4:
+          this.board[tileY][tileX].textContent = "4";
+          this.board[tileY][tileX].style.color = "#4a077a";
+          this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          break;
+        case 5:
+          this.board[tileY][tileX].textContent = "5";
+          this.board[tileY][tileX].style.color = "#a7a516";
+          this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          break;
+        case 6:
+          this.board[tileY][tileX].textContent = "6";
+          this.board[tileY][tileX].style.color = "#3ededb";
+          this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          break;
+        case 7:
+          this.board[tileY][tileX].textContent = "7";
+          this.board[tileY][tileX].style.color = "#de7b12";
+          this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          break;
+        case 8:
+          this.board[tileY][tileX].textContent = "8";
+          this.board[tileY][tileX].style.color = "#5c3104";
+          this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          break;
+      }
+    }
+  }
+
+  handleCheckBomb = (pos: number) => {
+    let row: number;
+    let col: number;
+
+    if (this.boardSize) {
+      row = Math.floor(pos / this.boardSize);
+      col = pos % this.boardSize;
+
+      this.currentPos = [row, col];
+
+      if (this.board[row][col].classList.contains("site__board-tile--bomb")) {
+        // game over
+
+        return;
+      }
+
+      for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+          this.handleRevealTiles(
+            this.currentPos[1] + j,
+            this.currentPos[0] + i
+          );
+        }
+      }
+    }
+  };
+
+  handleClickTile = (pos: number) => {
+    if (this.boardSize)
+      this.currentPos = [
+        Math.floor(pos / this.boardSize),
+        pos % this.boardSize,
+      ];
+
+    this.handlePlaceBombs();
+
+    if (this.boardSize) {
+      for (let i = 0; i < this.boardSize * this.boardSize; i++) {
+        const row = Math.floor(i / this.boardSize);
+        const col = i % this.boardSize;
+
+        this.board[row][col].removeEventListener(
+          "click",
+          this.tileClickHandler[i]
+        );
+
+        this.board[row][col].addEventListener("click", () => {
+          this.handleCheckBomb(i);
+        });
+      }
+    }
+  };
 
   handlePlaceBombs = () => {
     let bombsQty = null;
@@ -65,30 +204,6 @@ class Board extends StartPage {
     }
   };
 
-  handleClickTile = (pos: number) => {
-    if (this.boardSize)
-      this.currentPos = [
-        Math.floor(pos / this.boardSize),
-        pos % this.boardSize,
-      ];
-
-    this.handlePlaceBombs();
-
-    if (this.boardSize) {
-      for (let i = 0; i < this.boardSize * this.boardSize; i++) {
-        const row = Math.floor(i / this.boardSize);
-        const col = i % this.boardSize;
-
-        this.board[row][col].removeEventListener(
-          "click",
-          this.tileClickHandlers[i]
-        );
-
-        this.board[row][col].addEventListener("click", () => {});
-      }
-    }
-  };
-
   handleAddTile = (boardElement: HTMLDivElement | null, i: number) => {
     const newTile = document.createElement("button");
 
@@ -111,11 +226,11 @@ class Board extends StartPage {
       this.board[row][col] = newTile;
     }
 
-    this.tileClickHandlers[i] = () => {
+    this.tileClickHandler[i] = () => {
       this.handleClickTile(i);
     };
 
-    newTile.addEventListener("click", this.tileClickHandlers[i]);
+    newTile.addEventListener("click", this.tileClickHandler[i]);
 
     boardElement?.appendChild(newTile);
   };

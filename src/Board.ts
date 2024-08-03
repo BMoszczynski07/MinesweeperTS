@@ -1,41 +1,66 @@
 import StartPage from "./StartPage";
-import Tile from "./Tile";
+import Timer from "./Timer";
 
 class Board extends StartPage {
-  board: Tile[] = [];
+  board: HTMLButtonElement[] = [];
+
+  timer: Timer = new Timer();
+
+  handleAddTile = (boardElement: HTMLDivElement | null, i: number) => {
+    const newTile = document.createElement("button");
+
+    newTile.classList.add("site__board-tile");
+
+    if (i % 2 == 0) {
+      newTile.classList.add("site__board-tile--light-green");
+    } else {
+      newTile.classList.add("site__board-tile--dark-green");
+    }
+
+    this.board.push(newTile);
+
+    boardElement?.appendChild(newTile);
+  };
+
+  handleStartGame = () => {
+    this.timer.handleStartTime();
+  };
 
   handleGenerateBoard = (difficulty: "easy" | "medium" | "hard") => {
-    const boardContainer = document.querySelector(".site__board");
+    const boardElement: HTMLDivElement | null =
+      document.querySelector(".site__board");
 
     switch (difficulty) {
       case "easy":
-        for (let i = 0; i < 15 * 15; i++) {
-          const newTile = document.createElement("button");
+        if (boardElement) boardElement.style.width = "225px";
+        if (boardElement) boardElement.style.height = "225px";
 
-          newTile.classList.add("site__board-tile");
-
-          if (i % 2 == 0) {
-            newTile.classList.add("site__board-tile--light-green");
-          } else {
-            newTile.classList.add("site__board-tile--dark-green");
-          }
-
-          this.board.push({
-            type: "standard",
-            element: newTile,
-          });
-
-          boardContainer?.appendChild(newTile);
+        for (let i = 0; i < 9 * 9; i++) {
+          this.handleAddTile(boardElement, i);
         }
         break;
       case "medium":
+        if (boardElement) boardElement.style.width = "325px";
+        if (boardElement) boardElement.style.height = "325px";
+
+        for (let i = 0; i < 13 * 13; i++) {
+          this.handleAddTile(boardElement, i);
+        }
         break;
       case "hard":
+        if (boardElement) boardElement.style.width = "375px";
+        if (boardElement) boardElement.style.height = "375px";
+
+        for (let i = 0; i < 15 * 15; i++) {
+          this.handleAddTile(boardElement, i);
+        }
         break;
       default:
         console.error("nieprawidłowy poziom trudności");
         break;
     }
+
+    this.handleStartGame();
   };
 
   handlePickDifficulty = () => {

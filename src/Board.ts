@@ -11,6 +11,8 @@ class Board extends StartPage {
 
   currentPos: [number, number] | [null, null] = [null, null];
 
+  tileClickHandlers: { [key: number]: (event: Event) => void } = {};
+
   handlePlaceBombs = () => {
     let bombsQty = null;
 
@@ -49,6 +51,18 @@ class Board extends StartPage {
         this.board[bombY][bombX].classList.add("site__board-tile--bomb");
       }
     }
+
+    const boardElement = document.querySelector(".site__board");
+
+    boardElement?.classList.add("site__board--move");
+
+    if (!this.isMuted) {
+      const boardMoveAudio = new Audio();
+
+      boardMoveAudio.src = "./src/assets/start-game.wav";
+
+      boardMoveAudio.play();
+    }
   };
 
   handleClickTile = (pos: number) => {
@@ -59,6 +73,20 @@ class Board extends StartPage {
       ];
 
     this.handlePlaceBombs();
+
+    if (this.boardSize) {
+      for (let i = 0; i < this.boardSize * this.boardSize; i++) {
+        const row = Math.floor(i / this.boardSize);
+        const col = i % this.boardSize;
+
+        this.board[row][col].removeEventListener(
+          "click",
+          this.tileClickHandlers[i]
+        );
+
+        this.board[row][col].addEventListener("click", () => {});
+      }
+    }
   };
 
   handleAddTile = (boardElement: HTMLDivElement | null, i: number) => {
@@ -83,11 +111,11 @@ class Board extends StartPage {
       this.board[row][col] = newTile;
     }
 
-    console.log();
-
-    newTile.addEventListener("click", () => {
+    this.tileClickHandlers[i] = () => {
       this.handleClickTile(i);
-    });
+    };
+
+    newTile.addEventListener("click", this.tileClickHandlers[i]);
 
     boardElement?.appendChild(newTile);
   };

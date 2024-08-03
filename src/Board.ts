@@ -1,10 +1,65 @@
 import StartPage from "./StartPage";
 import Timer from "./Timer";
+import Random from "./utilities/Random";
 
 class Board extends StartPage {
-  board: HTMLButtonElement[] = [];
+  board: HTMLButtonElement[][] = [];
+  boardSize: number | null = null;
+  difficulty: "easy" | "medium" | "hard" | null = null;
 
   timer: Timer = new Timer();
+
+  currentPos: [number, number] | [null, null] = [null, null];
+
+  handlePlaceBombs = () => {
+    let bombsQty = null;
+
+    switch (this.difficulty) {
+      case "easy":
+        bombsQty = 10;
+        break;
+      case "medium":
+        bombsQty = 40;
+        break;
+      case "hard":
+        bombsQty = 75;
+        break;
+    }
+
+    if (bombsQty) {
+      for (let i = 0; i < bombsQty; i++) {
+        let bombX = 0;
+        let bombY = 0;
+
+        console.log(this.board);
+
+        while (
+          (bombX == this.currentPos[1] && bombY == this.currentPos[0]) ||
+          this.board[bombY][bombX].classList.contains("site__board-tile--bomb")
+        ) {
+          if (this.boardSize) {
+            bombX = new Random().handleGetInt(0, this.boardSize - 1);
+          }
+
+          if (this.boardSize) {
+            bombY = new Random().handleGetInt(0, this.boardSize - 1);
+          }
+        }
+
+        this.board[bombY][bombX].classList.add("site__board-tile--bomb");
+      }
+    }
+  };
+
+  handleClickTile = (pos: number) => {
+    if (this.boardSize)
+      this.currentPos = [
+        Math.floor(pos / this.boardSize),
+        pos % this.boardSize,
+      ];
+
+    this.handlePlaceBombs();
+  };
 
   handleAddTile = (boardElement: HTMLDivElement | null, i: number) => {
     const newTile = document.createElement("button");
@@ -17,7 +72,22 @@ class Board extends StartPage {
       newTile.classList.add("site__board-tile--dark-green");
     }
 
-    this.board.push(newTile);
+    if (this.boardSize) {
+      const row = Math.floor(i / this.boardSize);
+      const col = i % this.boardSize;
+
+      if (!this.board[row]) {
+        this.board[row] = [];
+      }
+
+      this.board[row][col] = newTile;
+    }
+
+    console.log();
+
+    newTile.addEventListener("click", () => {
+      this.handleClickTile(i);
+    });
 
     boardElement?.appendChild(newTile);
   };
@@ -30,10 +100,17 @@ class Board extends StartPage {
     const boardElement: HTMLDivElement | null =
       document.querySelector(".site__board");
 
+    const flags: HTMLParagraphElement | null = document.querySelector(
+      ".site__board-flags > .site__board-val"
+    );
+
     switch (difficulty) {
       case "easy":
         if (boardElement) boardElement.style.width = "225px";
         if (boardElement) boardElement.style.height = "225px";
+        if (flags) flags.textContent = "10";
+        this.boardSize = 9;
+        this.difficulty = "easy";
 
         for (let i = 0; i < 9 * 9; i++) {
           this.handleAddTile(boardElement, i);
@@ -42,6 +119,9 @@ class Board extends StartPage {
       case "medium":
         if (boardElement) boardElement.style.width = "325px";
         if (boardElement) boardElement.style.height = "325px";
+        if (flags) flags.textContent = "40";
+        this.boardSize = 13;
+        this.difficulty = "medium";
 
         for (let i = 0; i < 13 * 13; i++) {
           this.handleAddTile(boardElement, i);
@@ -50,6 +130,9 @@ class Board extends StartPage {
       case "hard":
         if (boardElement) boardElement.style.width = "375px";
         if (boardElement) boardElement.style.height = "375px";
+        if (flags) flags.textContent = "75";
+        this.boardSize = 15;
+        this.difficulty = "hard";
 
         for (let i = 0; i < 15 * 15; i++) {
           this.handleAddTile(boardElement, i);

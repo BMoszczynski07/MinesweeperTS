@@ -147,6 +147,8 @@ class Board extends StartPage {
 
     this.handlePlaceBombs();
 
+    this.handleCheckBomb(pos);
+
     if (this.boardSize) {
       for (let i = 0; i < this.boardSize * this.boardSize; i++) {
         const row = Math.floor(i / this.boardSize);
@@ -159,6 +161,13 @@ class Board extends StartPage {
 
         this.board[row][col].addEventListener("click", () => {
           this.handleCheckBomb(i);
+        });
+
+        this.board[row][col].addEventListener("contextmenu", (e: Event) => {
+          e.preventDefault();
+          this.board[row][col].classList.toggle("site__board-tile--flag");
+
+          return false;
         });
       }
     }
@@ -184,11 +193,16 @@ class Board extends StartPage {
         let bombX = 0;
         let bombY = 0;
 
-        console.log(this.board);
-
         while (
           (bombX == this.currentPos[1] && bombY == this.currentPos[0]) ||
-          this.board[bombY][bombX].classList.contains("site__board-tile--bomb")
+          this.board[bombY][bombX].classList.contains(
+            "site__board-tile--bomb"
+          ) ||
+          (this.currentPos[0] &&
+            this.currentPos[1] &&
+            this.boardSize &&
+            Math.abs(bombX - this.currentPos[1]) < this.boardSize / 5 &&
+            Math.abs(bombY - this.currentPos[0]) < this.boardSize / 5)
         ) {
           if (this.boardSize) {
             bombX = new Random().handleGetInt(0, this.boardSize - 1);

@@ -304,13 +304,14 @@ body {
     border: none;
     cursor: pointer;
 
+    &--flag {
+      background-image: url("./src/assets/flag.png") !important;
+      background-size: 25px !important;
+    }
+
     &--marked {
       background: #dbdbdb !important;
       font-family: $st;
-    }
-
-    &--bomb {
-      background: #f00 !important;
     }
 
     &--light-green {

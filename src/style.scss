@@ -312,6 +312,7 @@ body {
     &--marked {
       background: #dbdbdb !important;
       font-family: $st;
+      cursor: default;
     }
 
     &--light-green {

@@ -13,6 +13,9 @@ class Board extends StartPage {
 
   tileClickHandler: { [key: number]: (event: Event) => void } = {};
 
+  bigFieldFound = false;
+  clickFieldSound = false;
+
   handleCountBombs = (tileX: number, tileY: number): number => {
     let bombsQty = 0;
 
@@ -56,46 +59,56 @@ class Board extends StartPage {
               this.handleRevealTiles(tileX + j, tileY + i);
             }
           }
+
+          this.bigFieldFound = true;
           return;
         case 1:
           this.board[tileY][tileX].textContent = "1";
           this.board[tileY][tileX].style.color = "#4453db";
           this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          this.clickFieldSound = true;
           break;
         case 2:
           this.board[tileY][tileX].textContent = "2";
           this.board[tileY][tileX].style.color = "#0de00d";
           this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          this.clickFieldSound = true;
           break;
         case 3:
           this.board[tileY][tileX].textContent = "3";
           this.board[tileY][tileX].style.color = "#ba0b0b";
           this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          this.clickFieldSound = true;
           break;
         case 4:
           this.board[tileY][tileX].textContent = "4";
           this.board[tileY][tileX].style.color = "#4a077a";
           this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          this.clickFieldSound = true;
           break;
         case 5:
           this.board[tileY][tileX].textContent = "5";
           this.board[tileY][tileX].style.color = "#a7a516";
           this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          this.clickFieldSound = true;
           break;
         case 6:
           this.board[tileY][tileX].textContent = "6";
           this.board[tileY][tileX].style.color = "#3ededb";
           this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          this.clickFieldSound = true;
           break;
         case 7:
           this.board[tileY][tileX].textContent = "7";
           this.board[tileY][tileX].style.color = "#de7b12";
           this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          this.clickFieldSound = true;
           break;
         case 8:
           this.board[tileY][tileX].textContent = "8";
           this.board[tileY][tileX].style.color = "#5c3104";
           this.board[tileY][tileX].classList.add("site__board-tile--marked");
+          this.clickFieldSound = true;
           break;
       }
     }
@@ -123,6 +136,8 @@ class Board extends StartPage {
 
       console.log(countBombs);
 
+      this.clickFieldSound = false;
+
       if (countBombs > 0) {
         this.handleRevealTiles(this.currentPos[1], this.currentPos[0]);
       } else {
@@ -134,6 +149,36 @@ class Board extends StartPage {
             );
           }
         }
+      }
+
+      if (!this.bigFieldFound && !this.isMuted && this.clickFieldSound) {
+        const clickField = new Audio();
+
+        clickField.src = "./src/assets/click-field.wav";
+
+        clickField.play();
+      }
+
+      if (this.bigFieldFound && !this.isMuted) {
+        this.bigFieldFound = false;
+
+        const boardElement: HTMLDivElement | null =
+          document.querySelector(".site__board");
+
+        if (boardElement) {
+          boardElement.classList.remove("site__board--move");
+
+          // Wymuszenie reflow przez odczyt właściwości offsetWidth
+          void boardElement.offsetWidth;
+
+          boardElement.classList.add("site__board--move");
+        }
+
+        const bigField = new Audio();
+
+        bigField.src = "./src/assets/big-field.wav";
+
+        bigField.play();
       }
     }
   };
@@ -166,6 +211,14 @@ class Board extends StartPage {
         this.board[row][col].addEventListener("contextmenu", (e: Event) => {
           e.preventDefault();
           this.board[row][col].classList.toggle("site__board-tile--flag");
+
+          if (!this.isMuted) {
+            const flagFlap = new Audio();
+
+            flagFlap.src = "./src/assets/flag-flap.mp3";
+
+            flagFlap.play();
+          }
 
           return false;
         });
@@ -224,7 +277,7 @@ class Board extends StartPage {
     if (!this.isMuted) {
       const boardMoveAudio = new Audio();
 
-      boardMoveAudio.src = "./src/assets/start-game.wav";
+      boardMoveAudio.src = "./src/assets/big-field.wav";
 
       boardMoveAudio.play();
     }

@@ -16,6 +16,8 @@ class Board extends StartPage {
   bigFieldFound = false;
   clickFieldSound = false;
 
+  flagsQty: number | null = 0;
+
   handleCountBombs = (tileX: number, tileY: number): number => {
     let bombsQty = 0;
 
@@ -130,6 +132,9 @@ class Board extends StartPage {
         return;
       }
 
+      if (this.board[row][col].classList.contains("site__board-tile--flag"))
+        this.board[row][col].classList.remove("site__board-tile--flag");
+
       const countBombs = this.handleCountBombs(col, row);
 
       console.log(row, col);
@@ -210,13 +215,52 @@ class Board extends StartPage {
 
         this.board[row][col].addEventListener("contextmenu", (e: Event) => {
           e.preventDefault();
-          this.board[row][col].classList.toggle("site__board-tile--flag");
 
+          if (
+            this.board[row][col].classList.contains("site__board-tile--marked")
+          )
+            return;
+
+          // Pobranie stanu płytki (czy ma flagę czy nie)
+          const hasFlag = this.board[row][col].classList.contains(
+            "site__board-tile--flag"
+          );
+
+          if (hasFlag) {
+            // Usuwanie flagi
+            console.log("hasFlag...");
+            this.board[row][col].classList.remove("site__board-tile--flag");
+            if (this.flagsQty !== null) this.flagsQty++; // Zwiększenie licznika dostępnych flag
+          } else {
+            // Dodawanie flagi, ale tylko wtedy, gdy są dostępne flagi
+            console.log("!hasFlag...");
+            if (this.flagsQty !== null && this.flagsQty > 0) {
+              console.info(
+                "There are flags left! Im not leaving this function"
+              );
+              this.board[row][col].classList.add("site__board-tile--flag");
+              this.flagsQty--; // Zmniejszenie licznika dostępnych flag
+            } else {
+              console.error("There are no flags left! Leaving function");
+              // Jeśli nie ma dostępnych flag, wyjdź z funkcji
+              return;
+            }
+          }
+
+          console.log(this.flagsQty);
+
+          // Zawsze aktualizujemy licznik flag w UI
+          const flagVal: HTMLDivElement | null = document.querySelector(
+            ".site__board-flags > .site__board-val"
+          );
+          if (flagVal) {
+            flagVal.textContent = `${this.flagsQty}`;
+          }
+
+          // Odtwarzanie dźwięku flagi, jeśli dźwięk nie jest wyciszony
           if (!this.isMuted) {
             const flagFlap = new Audio();
-
             flagFlap.src = "./src/assets/flag-flap.mp3";
-
             flagFlap.play();
           }
 
@@ -330,7 +374,8 @@ class Board extends StartPage {
       case "easy":
         if (boardElement) boardElement.style.width = "225px";
         if (boardElement) boardElement.style.height = "225px";
-        if (flags) flags.textContent = "10";
+        this.flagsQty = 10;
+        if (flags) flags.textContent = `${this.flagsQty}`;
         this.boardSize = 9;
         this.difficulty = "easy";
 
@@ -341,7 +386,8 @@ class Board extends StartPage {
       case "medium":
         if (boardElement) boardElement.style.width = "325px";
         if (boardElement) boardElement.style.height = "325px";
-        if (flags) flags.textContent = "30";
+        this.flagsQty = 30;
+        if (flags) flags.textContent = `${this.flagsQty}`;
         this.boardSize = 13;
         this.difficulty = "medium";
 
@@ -352,7 +398,8 @@ class Board extends StartPage {
       case "hard":
         if (boardElement) boardElement.style.width = "375px";
         if (boardElement) boardElement.style.height = "375px";
-        if (flags) flags.textContent = "50";
+        this.flagsQty = 50;
+        if (flags) flags.textContent = `${this.flagsQty}`;
         this.boardSize = 15;
         this.difficulty = "hard";
 

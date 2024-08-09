@@ -253,7 +253,6 @@ body {
 
   &__board-container {
     opacity: 0;
-    transform: translate(30px);
     animation: difficulty_animate_in 0.5s forwards;
     padding: 0 24px;
     height: 500px;
@@ -307,6 +306,10 @@ body {
     &--flag {
       background-image: url("./src/assets/flag.png") !important;
       background-size: 25px !important;
+    }
+
+    &--explosion {
+      background: #f00 !important;
     }
 
     &--marked {

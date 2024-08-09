@@ -131,27 +131,48 @@ class Board extends StartPage {
       this.currentPos = [row, col];
 
       if (this.board[row][col].classList.contains("site__board-tile--bomb")) {
-        // this.explosionsInterval = setInterval(() => {
-        //   const bombsPositions = [];
+        const bombsPositions: HTMLButtonElement[] = [];
 
-        //   for (let i = 0; i < this.boardSize; i++) {
-        //     for (let j = 0; j < this.boardSize; j++) {}
-        //   }
-        // }, 750);
+        if (this.boardSize)
+          for (let i = 0; i < this.boardSize; i++) {
+            for (let j = 0; j < this.boardSize; j++) {
+              if (
+                this.board[i][j].classList.contains("site__board-tile--bomb")
+              ) {
+                bombsPositions.push(this.board[i][j]);
+              }
+            }
+          }
 
-        // let bombId = 0;
+        this.explosionsInterval = setInterval(() => {
+          bombsPositions[0].classList.add("site__board-tile--explosion");
+
+          bombsPositions.shift();
+
+          if (!this.isMuted) {
+            const explosion = new Audio();
+
+            explosion.src = "./src/assets/explosion.wav";
+
+            explosion.play();
+          }
+        }, 1000 / this.boardSize + 200);
 
         return;
       }
 
-      if (this.board[row][col].classList.contains("site__board-tile--flag"))
+      if (this.board[row][col].classList.contains("site__board-tile--flag")) {
         this.board[row][col].classList.remove("site__board-tile--flag");
+        if (this.flagsQty) this.flagsQty++;
+
+        const flagsVal: HTMLParagraphElement | null = document.querySelector(
+          ".site__board-flags > .site__board-val"
+        );
+
+        if (flagsVal) flagsVal.textContent = `${this.flagsQty}`;
+      }
 
       const countBombs = this.handleCountBombs(col, row);
-
-      console.log(row, col);
-
-      console.log(countBombs);
 
       this.clickFieldSound = false;
 
@@ -240,26 +261,18 @@ class Board extends StartPage {
 
           if (hasFlag) {
             // Usuwanie flagi
-            console.log("hasFlag...");
             this.board[row][col].classList.remove("site__board-tile--flag");
             if (this.flagsQty !== null) this.flagsQty++; // Zwiększenie licznika dostępnych flag
           } else {
             // Dodawanie flagi, ale tylko wtedy, gdy są dostępne flagi
-            console.log("!hasFlag...");
             if (this.flagsQty !== null && this.flagsQty > 0) {
-              console.info(
-                "There are flags left! Im not leaving this function"
-              );
               this.board[row][col].classList.add("site__board-tile--flag");
               this.flagsQty--; // Zmniejszenie licznika dostępnych flag
             } else {
-              console.error("There are no flags left! Leaving function");
               // Jeśli nie ma dostępnych flag, wyjdź z funkcji
               return;
             }
           }
-
-          console.log(this.flagsQty);
 
           // Zawsze aktualizujemy licznik flag w UI
           const flagVal: HTMLDivElement | null = document.querySelector(

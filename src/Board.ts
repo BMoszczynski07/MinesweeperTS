@@ -18,6 +18,10 @@ class Board extends StartPage {
 
   flagsQty: number | null = 0;
 
+  isGameStarted = false;
+
+  explosionsInterval: number | null = null;
+
   handleCountBombs = (tileX: number, tileY: number): number => {
     let bombsQty = 0;
 
@@ -127,7 +131,15 @@ class Board extends StartPage {
       this.currentPos = [row, col];
 
       if (this.board[row][col].classList.contains("site__board-tile--bomb")) {
-        // game over
+        // this.explosionsInterval = setInterval(() => {
+        //   const bombsPositions = [];
+
+        //   for (let i = 0; i < this.boardSize; i++) {
+        //     for (let j = 0; j < this.boardSize; j++) {}
+        //   }
+        // }, 750);
+
+        // let bombId = 0;
 
         return;
       }
@@ -359,6 +371,8 @@ class Board extends StartPage {
   };
 
   handleStartGame = () => {
+    this.isGameStarted = true;
+
     this.timer.handleStartTime();
   };
 
@@ -467,16 +481,22 @@ class Board extends StartPage {
         const difficultyHard = document.querySelector(".site__btn--red");
 
         difficultyEasy?.addEventListener("click", () => {
+          if (this.isGameStarted) return;
+
           this.handlePickDifficulty();
           this.handleGenerateBoard("easy");
         });
 
         difficultyNormal?.addEventListener("click", () => {
+          if (this.isGameStarted) return;
+
           this.handlePickDifficulty();
           this.handleGenerateBoard("medium");
         });
 
         difficultyHard?.addEventListener("click", () => {
+          if (this.isGameStarted) return;
+
           this.handlePickDifficulty();
           this.handleGenerateBoard("hard");
         });

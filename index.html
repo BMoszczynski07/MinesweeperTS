@@ -28,18 +28,18 @@
 
           <h5 class="site__play-subtitle">Click "play" to start a game</h5>
 
-          <button class="site__play site__start-game-btn">Play</button>
+          <button class="site__start-game-btn site__play">Play</button>
         </div>
 
         <div class="site__difficulty">
-          <header class="site__play-header site__play-difficulty-header">
+          <header class="site__play-difficulty-header site__play-header">
             Choose difficulty
           </header>
 
           <div class="site__difficulty-btns">
-            <button class="site__play site__btn--green">Easy</button>
-            <button class="site__play site__btn--yellow">Normal</button>
-            <button class="site__play site__btn--red">Hard</button>
+            <button class="site__btn--green site__play">Easy</button>
+            <button class="site__btn--yellow site__play">Normal</button>
+            <button class="site__btn--red site__play">Hard</button>
           </div>
         </div>
 
@@ -61,6 +61,46 @@
                 <i class="fa-solid fa-clock"></i>
 
                 <p class="site__board-val">00:00:00</p>
+              </div>
+            </div>
+
+            <div class="site__game-over">
+              <header class="site__game-over-header">Game over</header>
+
+              <div class="site__badges">
+                <div class="site__badge site__badge-board-size">
+                  <i class="fa-solid fa-chess-board"></i>
+
+                  <p class="site__badge-text">20x20</p>
+                </div>
+                <div class="site__badge site__badge-time">
+                  <i class="fa-solid fa-clock"></i>
+
+                  <p class="site__badge-text">01:05:03</p>
+                </div>
+                <div class="site__badge site__badge-points">
+                  <i class="fa-solid fa-coins"></i>
+
+                  <p class="site__badge-text">100000</p>
+                </div>
+              </div>
+
+              <div class="site__game-over-btns">
+                <button class="site__game-over-btn site__game-over-btn--again">
+                  Zagraj od nowa
+                </button>
+                <button class="site__game-over-btn site__game-over-btn--X">
+                  <i class="fa-brands fa-x-twitter site__game-over-icon"></i>
+
+                  Udostępnij wynik na X
+                </button>
+                <button
+                  class="site__game-over-btn site__game-over-btn--facebook"
+                >
+                  <i class="fa-brands fa-facebook site__game-over-icon"></i>
+
+                  Udostępnij wynik na facebooku
+                </button>
               </div>
             </div>
 

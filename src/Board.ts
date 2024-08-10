@@ -20,7 +20,7 @@ class Board extends StartPage {
 
   isGameStarted = false;
 
-  explosionsInterval: number | null = null;
+  explosionsInterval: number | undefined = undefined;
 
   handleCountBombs = (tileX: number, tileY: number): number => {
     let bombsQty = 0;
@@ -131,6 +131,41 @@ class Board extends StartPage {
       this.currentPos = [row, col];
 
       if (this.board[row][col].classList.contains("site__board-tile--bomb")) {
+        this.timer.handleStopTime();
+
+        const boardSize: HTMLParagraphElement | null = document.querySelector(
+          ".site__badge-board-size > .site__badge-text"
+        );
+
+        const time: HTMLParagraphElement | null = document.querySelector(
+          ".site__badge-time > .site__badge-text"
+        );
+
+        const points: HTMLParagraphElement | null = document.querySelector(
+          ".site__badge-points > .site__badge-text"
+        );
+
+        if (boardSize && time && points) {
+          boardSize.textContent = `${this.boardSize}x${this.boardSize}`;
+          time.textContent = `${
+            Math.floor(this.timer.time / 3600) >= 10
+              ? Math.floor(this.timer.time / 3600)
+              : "0" + Math.floor(this.timer.time / 3600)
+          }:${
+            Math.floor(this.timer.time / 60) % 60 >= 10
+              ? Math.floor(this.timer.time / 60) % 60
+              : "0" + Math.floor((this.timer.time / 60) % 60)
+          }:${
+            this.timer.time % 60 >= 10
+              ? this.timer.time % 60
+              : "0" + (this.timer.time % 60)
+          }`;
+          points.textContent = `${(
+            (this.timer.time * this.boardSize) /
+            10
+          ).toFixed(2)}`;
+        }
+
         const bombsPositions: HTMLButtonElement[] = [];
 
         if (this.boardSize)
@@ -145,6 +180,11 @@ class Board extends StartPage {
           }
 
         this.explosionsInterval = setInterval(() => {
+          if (bombsPositions.length === 0 || !this.isGameStarted) {
+            clearInterval(this.explosionsInterval);
+            return;
+          }
+
           bombsPositions[0].classList.add("site__board-tile--explosion");
 
           bombsPositions.shift();
@@ -157,6 +197,63 @@ class Board extends StartPage {
             explosion.play();
           }
         }, 1000 / this.boardSize + 200);
+
+        setTimeout(() => {
+          const gameOverElement: HTMLDivElement | null =
+            document.querySelector(".site__game-over");
+
+          if (gameOverElement) gameOverElement.style.display = "flex";
+
+          const playAgain = document.querySelector(
+            ".site__game-over-btn--again"
+          );
+
+          playAgain?.addEventListener("click", () => {
+            this.isGameStarted = false;
+
+            this.timer.time = 0;
+
+            // Lista elementów do usunięcia klasy
+            const elements = [
+              document.querySelector(".site__play-header"),
+              document.querySelector(".site__play-subtitle"),
+              document.querySelector(".site__start-game-btn"),
+              document.querySelector(".site__play-difficulty-header"),
+              document.querySelector(".site__btn--green"),
+              document.querySelector(".site__btn--yellow"),
+              document.querySelector(".site__btn--red"),
+            ];
+
+            // Funkcja usuwająca klasę ".element--out"
+            function removeOutClass(element: Element | null) {
+              console.log("removing class from " + element?.textContent);
+
+              console.log(element?.classList[0]);
+
+              if (element) {
+                element.classList.remove(`${element.classList[0]}--out`);
+              }
+            }
+
+            // Usunięcie klasy dla każdego elementu z listy
+            elements.forEach((el) => removeOutClass(el));
+
+            const boardOverlay: HTMLDivElement | null = document.querySelector(
+              ".site__board-overlay"
+            );
+
+            boardOverlay?.classList.add("site__board-overlay--out");
+
+            setTimeout(() => {
+              if (boardOverlay) boardOverlay.style.display = "none";
+
+              const start: HTMLDivElement | null =
+                document.querySelector(".site__start");
+
+              if (start) start.style.display = "flex";
+            }, 500);
+          });
+        }, 1000);
 
         return;
       }
@@ -389,7 +486,22 @@ class Board extends StartPage {
     this.timer.handleStartTime();
   };
 
+  handleClearBoard = () => {
+    if (this.boardSize)
+      for (let i = 0; i < this.boardSize; i++) {
+        for (let j = 0; j < this.boardSize; j++) {
+          const board = document.querySelector(".site__board");
+
+          board?.removeChild(this.board[i][j]);
+        }
+      }
+
+    this.board = [];
+  };
+
   handleGenerateBoard = (difficulty: "easy" | "medium" | "hard") => {
+    this.handleClearBoard();
+
     const boardElement: HTMLDivElement | null =
       document.querySelector(".site__board");
 
@@ -464,7 +576,19 @@ class Board extends StartPage {
 
     setTimeout(() => {
       if (difficulty) difficulty.style.display = "none";
-      if (boardOverlay) boardOverlay.style.display = "flex";
+      if (boardOverlay) {
+        boardOverlay.style.display = "flex";
+        boardOverlay.classList.remove("site__board-overlay--out");
+
+        const board = document.querySelector(".site__board");
+
+        board?.classList.remove("site__board--move");
+
+        const gameOver: HTMLDivElement | null =
+          document.querySelector(".site__game-over");
+
+        if (gameOver) gameOver.style.display = "none";
+      }
     }, 700);
   };
 

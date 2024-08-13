@@ -120,6 +120,133 @@ class Board extends StartPage {
     }
   }
 
+  handlePlayAgain = (win: boolean) => {
+    const gameOverElement: HTMLDivElement | null =
+      document.querySelector(".site__game-over");
+
+    if (gameOverElement) gameOverElement.style.display = "flex";
+
+    if (win) {
+      if (!this.isMuted) {
+        const win = new Audio();
+
+        win.src = "./src/assets/win.wav";
+        win.play();
+      }
+
+      const gameOverHeader: HTMLHeadElement | null = document.querySelector(
+        ".site__game-over-header"
+      );
+
+      if (gameOverHeader) {
+        gameOverHeader.textContent = "You won!";
+        gameOverHeader.style.color = "#14c428";
+      }
+    } else {
+      if (!this.isMuted) {
+        const gameover = new Audio();
+
+        gameover.src = "./src/assets/gameover.wav";
+        gameover.play();
+      }
+
+      const gameOverHeader: HTMLHeadElement | null = document.querySelector(
+        ".site__game-over-header"
+      );
+
+      if (gameOverHeader) {
+        gameOverHeader.textContent = "Game over!";
+        gameOverHeader.style.color = "#db0928";
+      }
+    }
+
+    const playAgain = document.querySelector(".site__game-over-btn--again");
+
+    playAgain?.addEventListener("click", () => {
+      this.isGameStarted = false;
+
+      this.timer.time = 0;
+
+      // Lista elementów do usunięcia klasy
+      const elements = [
+        document.querySelector(".site__play-header"),
+        document.querySelector(".site__play-subtitle"),
+        document.querySelector(".site__start-game-btn"),
+        document.querySelector(".site__play-difficulty-header"),
+        document.querySelector(".site__btn--green"),
+        document.querySelector(".site__btn--yellow"),
+        document.querySelector(".site__btn--red"),
+      ];
+
+      // Funkcja usuwająca klasę ".element--out"
+      function removeOutClass(element: Element | null) {
+        console.log("removing class from " + element?.textContent);
+
+        console.log(element?.classList[0]);
+
+        if (element) {
+          element.classList.remove(`${element.classList[0]}--out`);
+        }
+      }
+
+      // Usunięcie klasy dla każdego elementu z listy
+      elements.forEach((el) => removeOutClass(el));
+
+      const boardOverlay: HTMLDivElement | null = document.querySelector(
+        ".site__board-overlay"
+      );
+
+      boardOverlay?.classList.add("site__board-overlay--out");
+
+      setTimeout(() => {
+        if (boardOverlay) boardOverlay.style.display = "none";
+
+        const start: HTMLDivElement | null =
+          document.querySelector(".site__start");
+
+        if (start) start.style.display = "flex";
+      }, 500);
+    });
+  };
+
+  handleStopTime = () => {
+    this.timer.handleStopTime();
+
+    const boardSize: HTMLParagraphElement | null = document.querySelector(
+      ".site__badge-board-size > .site__badge-text"
+    );
+
+    const time: HTMLParagraphElement | null = document.querySelector(
+      ".site__badge-time > .site__badge-text"
+    );
+
+    const points: HTMLParagraphElement | null = document.querySelector(
+      ".site__badge-points > .site__badge-text"
+    );
+
+    if (boardSize && time && points) {
+      boardSize.textContent = `${this.boardSize}x${this.boardSize}`;
+      time.textContent = `${
+        Math.floor(this.timer.time / 3600) >= 10
+          ? Math.floor(this.timer.time / 3600)
+          : "0" + Math.floor(this.timer.time / 3600)
+      }:${
+        Math.floor(this.timer.time / 60) % 60 >= 10
+          ? Math.floor(this.timer.time / 60) % 60
+          : "0" + Math.floor((this.timer.time / 60) % 60)
+      }:${
+        this.timer.time % 60 >= 10
+          ? this.timer.time % 60
+          : "0" + (this.timer.time % 60)
+      }`;
+      if (this.boardSize)
+        points.textContent = `${(
+          (this.timer.time * this.boardSize) /
+          10
+        ).toFixed(2)}`;
+    }
+  };
+
   handleCheckBomb = (pos: number) => {
     let row: number;
     let col: number;
@@ -131,40 +258,7 @@ class Board extends StartPage {
       this.currentPos = [row, col];
 
       if (this.board[row][col].classList.contains("site__board-tile--bomb")) {
-        this.timer.handleStopTime();
-
-        const boardSize: HTMLParagraphElement | null = document.querySelector(
-          ".site__badge-board-size > .site__badge-text"
-        );
-
-        const time: HTMLParagraphElement | null = document.querySelector(
-          ".site__badge-time > .site__badge-text"
-        );
-
-        const points: HTMLParagraphElement | null = document.querySelector(
-          ".site__badge-points > .site__badge-text"
-        );
-
-        if (boardSize && time && points) {
-          boardSize.textContent = `${this.boardSize}x${this.boardSize}`;
-          time.textContent = `${
-            Math.floor(this.timer.time / 3600) >= 10
-              ? Math.floor(this.timer.time / 3600)
-              : "0" + Math.floor(this.timer.time / 3600)
-          }:${
-            Math.floor(this.timer.time / 60) % 60 >= 10
-              ? Math.floor(this.timer.time / 60) % 60
-              : "0" + Math.floor((this.timer.time / 60) % 60)
-          }:${
-            this.timer.time % 60 >= 10
-              ? this.timer.time % 60
-              : "0" + (this.timer.time % 60)
-          }`;
-          points.textContent = `${(
-            (this.timer.time * this.boardSize) /
-            10
-          ).toFixed(2)}`;
-        }
+        this.handleStopTime();
 
         const bombsPositions: HTMLButtonElement[] = [];
 
@@ -199,60 +293,7 @@ class Board extends StartPage {
         }, 1000 / this.boardSize + 200);
 
         setTimeout(() => {
-          const gameOverElement: HTMLDivElement | null =
-            document.querySelector(".site__game-over");
-
-          if (gameOverElement) gameOverElement.style.display = "flex";
-
-          const playAgain = document.querySelector(
-            ".site__game-over-btn--again"
-          );
-
-          playAgain?.addEventListener("click", () => {
-            this.isGameStarted = false;
-
-            this.timer.time = 0;
-
-            // Lista elementów do usunięcia klasy
-            const elements = [
-              document.querySelector(".site__play-header"),
-              document.querySelector(".site__play-subtitle"),
-              document.querySelector(".site__start-game-btn"),
-              document.querySelector(".site__play-difficulty-header"),
-              document.querySelector(".site__btn--green"),
-              document.querySelector(".site__btn--yellow"),
-              document.querySelector(".site__btn--red"),
-            ];
-
-            // Funkcja usuwająca klasę ".element--out"
-            function removeOutClass(element: Element | null) {
-              console.log("removing class from " + element?.textContent);
-
-              console.log(element?.classList[0]);
-
-              if (element) {
-                element.classList.remove(`${element.classList[0]}--out`);
-              }
-            }
-
-            // Usunięcie klasy dla każdego elementu z listy
-            elements.forEach((el) => removeOutClass(el));
-
-            const boardOverlay: HTMLDivElement | null = document.querySelector(
-              ".site__board-overlay"
-            );
-
-            boardOverlay?.classList.add("site__board-overlay--out");
-
-            setTimeout(() => {
-              if (boardOverlay) boardOverlay.style.display = "none";
-
-              const start: HTMLDivElement | null =
-                document.querySelector(".site__start");
-
-              if (start) start.style.display = "flex";
-            }, 500);
-          });
+          this.handlePlayAgain(false);
         }, 1000);
 
         return;
@@ -318,6 +359,29 @@ class Board extends StartPage {
     }
   };
 
+  handleCheckWin = () => {
+    console.log(this.board);
+
+    if (this.boardSize)
+      for (let i = 0; i < this.boardSize; i++) {
+        for (let j = 0; j < this.boardSize; j++) {
+          if (
+            !this.board[i][j].classList.contains("site__board-tile--marked") &&
+            !this.board[i][j].classList.contains("site__board-tile--flag")
+          )
+            return false;
+
+          if (
+            this.board[i][j].classList.contains("site__board-tile--flag") &&
+            !this.board[i][j].classList.contains("site__board-tile--bomb")
+          )
+            return false;
+        }
+      }
+
+    return true;
+  };
+
   handleClickTile = (pos: number) => {
     if (this.boardSize)
       this.currentPos = [
@@ -341,6 +405,14 @@ class Board extends StartPage {
 
         this.board[row][col].addEventListener("click", () => {
           this.handleCheckBomb(i);
+          const didUserWin = this.handleCheckWin();
+
+          console.log(didUserWin);
+
+          if (didUserWin) {
+            this.handleStopTime();
+            this.handlePlayAgain(true);
+          }
         });
 
         this.board[row][col].addEventListener("contextmenu", (e: Event) => {
@@ -384,6 +456,15 @@ class Board extends StartPage {
             const flagFlap = new Audio();
             flagFlap.src = "./src/assets/flag-flap.mp3";
             flagFlap.play();
+          }
+
+          const didUserWin = this.handleCheckWin();
+
+          console.log(didUserWin);
+
+          if (didUserWin) {
+            this.handleStopTime();
+            this.handlePlayAgain(true);
           }
 
           return false;

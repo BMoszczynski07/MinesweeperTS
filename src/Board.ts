@@ -444,6 +444,8 @@ class Board extends StartPage {
         );
 
         this.board[row][col].addEventListener("click", () => {
+          if (this.areBombsLocated) return;
+
           this.handleCheckBomb(i);
           const didUserWin = this.handleCheckWin();
 
@@ -456,6 +458,8 @@ class Board extends StartPage {
         });
 
         this.board[row][col].addEventListener("contextmenu", (e: Event) => {
+          if (this.areBombsLocated) return;
+
           e.preventDefault();
 
           if (

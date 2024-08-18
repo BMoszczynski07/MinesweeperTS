@@ -1,5 +1,14 @@
 import Random from "./utilities/Random";
 
+import cloud1 from "./assets/cloud-1.png";
+import cloud2 from "./assets/cloud-2.png";
+import cloud3 from "./assets/cloud-3.png";
+import cloud4 from "./assets/cloud-4.png";
+import cloud5 from "./assets/cloud-5.png";
+
+import hover from "./assets/hover.wav";
+import click from "./assets/click.wav";
+
 class StartPage {
   isMuted = false;
 
@@ -10,7 +19,25 @@ class StartPage {
     const cloudImg = document.createElement("img");
 
     const rand = Math.floor(new Random().handleGetInt(1, 5));
-    cloudImg.src = `./src/assets/cloud-${rand}.png`;
+    cloudImg.src = `./assets/cloud-${rand}.png`;
+
+    switch (rand) {
+      case 1:
+        cloudImg.src = cloud1;
+        break;
+      case 2:
+        cloudImg.src = cloud2;
+        break;
+      case 3:
+        cloudImg.src = cloud3;
+        break;
+      case 4:
+        cloudImg.src = cloud4;
+        break;
+      case 5:
+        cloudImg.src = cloud5;
+        break;
+    }
 
     cloudImg.classList.add("site__cloud");
 
@@ -50,7 +77,7 @@ class StartPage {
       btn.addEventListener("mouseover", () => {
         if (!this.isMuted) {
           const audio = new Audio();
-          audio.src = "./src/assets/hover.wav";
+          audio.src = hover;
 
           audio.play();
         }
@@ -59,7 +86,7 @@ class StartPage {
       btn.addEventListener("click", () => {
         if (!this.isMuted) {
           const audio = new Audio();
-          audio.src = "./src/assets/click.wav";
+          audio.src = click;
 
           audio.play();
         }

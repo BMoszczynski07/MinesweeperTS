@@ -2,6 +2,13 @@ import StartPage from "./StartPage";
 import Timer from "./Timer";
 import Random from "./utilities/Random";
 
+import winAudio from "./assets/win.wav";
+import gameoverAudio from "./assets/gameover.wav";
+import explosionAudio from "./assets/explosion.wav";
+import flagFlapAudio from "./assets/flag-flap.mp3";
+import clickFieldAudio from "./assets/click-field.wav";
+import bigFieldAudio from "./assets/big-field.wav";
+
 class Board extends StartPage {
   board: HTMLButtonElement[][] = [];
   boardSize: number | null = null;
@@ -21,6 +28,8 @@ class Board extends StartPage {
   isGameStarted = false;
 
   explosionsInterval: number | undefined = undefined;
+
+  areBombsLocated: boolean = false;
 
   handleCountBombs = (tileX: number, tileY: number): number => {
     let bombsQty = 0;
@@ -130,7 +139,7 @@ class Board extends StartPage {
       if (!this.isMuted) {
         const win = new Audio();
 
-        win.src = "./src/assets/win.wav";
+        win.src = winAudio;
         win.play();
       }
 
@@ -146,7 +155,7 @@ class Board extends StartPage {
       if (!this.isMuted) {
         const gameover = new Audio();
 
-        gameover.src = "./src/assets/gameover.wav";
+        gameover.src = gameoverAudio;
         gameover.play();
       }
 
@@ -207,6 +216,33 @@ class Board extends StartPage {
         if (start) start.style.display = "flex";
       }, 500);
     });
+
+    const shareOnX = document.querySelector(".site__game-over-btn--X");
+    const shareOnFacebook = document.querySelector(
+      ".site__game-over-btn--facebook"
+    );
+
+    shareOnX?.addEventListener("click", this.handleShareOnX);
+    shareOnFacebook?.addEventListener("click", this.handleShareOnFacebook);
+  };
+
+  handleShareOnFacebook = () => {
+    const url = encodeURIComponent(window.location.href);
+    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+
+    window.open(facebookShareUrl, "_blank", "width=600,height=400");
+  };
+
+  handleShareOnX = () => {
+    let url;
+
+    if (this.boardSize)
+      url = `https://www.x.com/share?url=${window.location.href}&title=I got ${(
+        (this.timer.time * this.boardSize) /
+        10
+      ).toFixed(2)} points in minesweeper. Wanna give it a try?`;
+
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   handleStopTime = () => {
@@ -258,6 +294,10 @@ class Board extends StartPage {
       this.currentPos = [row, col];
 
       if (this.board[row][col].classList.contains("site__board-tile--bomb")) {
+        if (this.areBombsLocated) return;
+
+        this.areBombsLocated = true;
+
         this.handleStopTime();
 
         const bombsPositions: HTMLButtonElement[] = [];
@@ -286,7 +326,7 @@ class Board extends StartPage {
           if (!this.isMuted) {
             const explosion = new Audio();
 
-            explosion.src = "./src/assets/explosion.wav";
+            explosion.src = explosionAudio;
 
             explosion.play();
           }
@@ -330,7 +370,7 @@ class Board extends StartPage {
       if (!this.bigFieldFound && !this.isMuted && this.clickFieldSound) {
         const clickField = new Audio();
 
-        clickField.src = "./src/assets/click-field.wav";
+        clickField.src = clickFieldAudio;
 
         clickField.play();
       }
@@ -352,7 +392,7 @@ class Board extends StartPage {
 
         const bigField = new Audio();
 
-        bigField.src = "./src/assets/big-field.wav";
+        bigField.src = bigFieldAudio;
 
         bigField.play();
       }
@@ -454,7 +494,7 @@ class Board extends StartPage {
           // Odtwarzanie dźwięku flagi, jeśli dźwięk nie jest wyciszony
           if (!this.isMuted) {
             const flagFlap = new Audio();
-            flagFlap.src = "./src/assets/flag-flap.mp3";
+            flagFlap.src = flagFlapAudio;
             flagFlap.play();
           }
 
@@ -522,11 +562,11 @@ class Board extends StartPage {
     boardElement?.classList.add("site__board--move");
 
     if (!this.isMuted) {
-      const boardMoveAudio = new Audio();
+      const boardMove = new Audio();
 
-      boardMoveAudio.src = "./src/assets/big-field.wav";
+      boardMove.src = bigFieldAudio;
 
-      boardMoveAudio.play();
+      boardMove.play();
     }
   };
 
@@ -563,6 +603,7 @@ class Board extends StartPage {
 
   handleStartGame = () => {
     this.isGameStarted = true;
+    this.areBombsLocated = false;
 
     this.timer.handleStartTime();
   };

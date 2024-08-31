@@ -55,12 +55,18 @@
   }
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+body,
+html {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html {
   background: #6be9ff;
-  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box !important;
 }
 
 *::selection {
@@ -68,6 +74,13 @@ body {
 }
 
 .site {
+  &__start-page {
+    position: relative;
+    max-width: 100% !important;
+    min-height: 100svh !important;
+    overflow: hidden !important;
+  }
+
   &__nav {
     padding: 16px;
   }
@@ -184,6 +197,7 @@ body {
     &-header {
       font-family: $t;
       font-size: 42px;
+      margin: 8px;
 
       &--out {
         animation: difficulty_animate_out 0.4s forwards;
@@ -199,7 +213,7 @@ body {
     }
 
     &-subtitle {
-      font-family: $st;
+      font-family: $tl;
       margin-top: 0;
       font-size: 14px;
       color: #797979;
@@ -213,10 +227,11 @@ body {
   &__play {
     position: relative;
     margin-top: 20px;
-    padding-top: 8px;
+    font-size: 25px;
+    padding-top: 5px;
+    padding-bottom: 12px;
     padding-left: 12px;
     padding-right: 12px;
-    font-size: 17px;
     font-family: $st;
     letter-spacing: 0.5px;
     border: none;
@@ -307,7 +322,7 @@ body {
     border-radius: 8px;
     padding: 0 5px;
     font-family: $st;
-    font-size: 10px;
+    font-size: 15px;
   }
 
   &__board {
@@ -324,6 +339,8 @@ body {
   &__board-tile {
     width: 25px;
     height: 25px;
+    font-family: $tl !important;
+    font-size: 13px;
     border: none;
     cursor: pointer;
 
@@ -365,7 +382,7 @@ body {
   }
 
   &__board-header {
-    font-size: 19px;
+    font-size: 29px;
     color: #dedede;
     font-family: $st;
     padding: 12px;
@@ -429,7 +446,8 @@ body {
     padding: 0 12px;
     border-radius: 3px;
     font-family: $st;
-    font-size: 13px;
+    font-size: 18px;
+    padding-bottom: 5px;
     color: #474747;
     animation: difficulty_animate_in 0.3s forwards;
   }
@@ -446,7 +464,6 @@ body {
   }
 
   &__game-over-icon {
-    transform: translateY(-9px);
     margin-right: 5px;
   }
 
@@ -461,10 +478,10 @@ body {
     width: calc(100% - 32px);
     margin: 5px 0;
     padding: 12px 0;
+    font-size: 20px;
     border: none;
     cursor: pointer;
     font-family: $st;
-    font-size: 13px;
     opacity: 0;
     transform: translateX(30px);
     animation: difficulty_animate_in 0.3s forwards;

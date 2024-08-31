@@ -1,6 +1,7 @@
 $p: "Poppins", sans-serif;
 $t: "title";
 $st: "subtitle";
+$tl: "tile";
 
 @font-face {
   font-family: "title";
@@ -10,4 +11,9 @@ $st: "subtitle";
 @font-face {
   font-family: "subtitle";
   src: url("./fonts/subtitle.ttf");
+}
+
+@font-face {
+  font-family: "tile";
+  src: url("./fonts/tile.ttf");
 }

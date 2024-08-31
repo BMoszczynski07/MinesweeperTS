@@ -237,10 +237,12 @@ class Board extends StartPage {
     let url;
 
     if (this.boardSize)
-      url = `https://www.x.com/share?url=${window.location.href}&title=I got ${(
+      url = `https://x.com/intent/tweet?text=I got ${(
         (this.timer.time * this.boardSize) /
         10
-      ).toFixed(2)} points in minesweeper. Wanna give it a try?`;
+      ).toFixed(2)} points in minesweeper. Wanna give it a try? ${
+        window.location.href
+      }`;
 
     window.open(url, "_blank", "noopener,noreferrer");
   };

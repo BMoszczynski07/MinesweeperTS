@@ -238,8 +238,8 @@ class Board extends StartPage {
 
     if (this.boardSize)
       url = `https://x.com/intent/tweet?text=I got ${(
-        (this.timer.time * this.boardSize) /
-        10
+        (this.boardSize / (this.timer.time + 1)) *
+        100
       ).toFixed(2)} points in minesweeper. Wanna give it a try? ${
         window.location.href
       }`;
@@ -279,8 +279,8 @@ class Board extends StartPage {
       }`;
       if (this.boardSize)
         points.textContent = `${(
-          (this.timer.time * this.boardSize) /
-          10
+          (this.boardSize / (this.timer.time + 1)) *
+          100
         ).toFixed(2)}`;
     }
   };
